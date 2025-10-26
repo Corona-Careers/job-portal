@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status Update</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; }
+        .container { width: 90%; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .header { font-size: 24px; color: #333; }
+        .content { margin-top: 20px; }
+        .status-passed { color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; border-radius: 4px; }
+        .status-failed { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 4px; }
+        .comment { margin-top: 15px; padding-left: 15px; border-left: 4px solid #eee; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="header">Application Update</h1>
+        <div class="content">
+            <p>Dear {{ applicant_name }},</p>
+
+            <p>We have an update regarding your application for the <strong>{{ job_title }}</strong> position, following your <strong>{{ stage_name }}</strong>.</p>
+
+            {% if status == 'passed' %}
+                <div class="status-passed">
+                    <strong>Congratulations!</strong> You have successfully passed this stage. We will be in touch shortly with the next steps.
+                </div>
+            {% else %}
+                <div class="status-failed">
+                    <strong>Update: {{ status_display }}</strong>
+                    <p>Thank you for your time and interest. After careful consideration, we have decided not to move forward with your application at this time.</p>
+                </div>
+            {% endif %}
+
+            {% if comment %}
+                <div class="comment">
+                    <strong>HR Comment:</strong>
+                    <p style="white-space: pre-wrap;"><em>{{ comment }}</em></p>
+                </div>
+            {% endif %}
+
+            <p>We appreciate your interest in our company.</p>
+            <p>Best regards,<br>The HR Team</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,183 @@
+{% extends 'jobs/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Manage Application{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 pb-3" style="border-bottom: 2px solid #EEEEEE;">
+    <div class="mb-3 mb-md-0">
+        <h1 class="h2 mb-2">Manage Application</h1>
+        <p class="lead text-muted mb-0" style="font-size: 1rem;">
+            Applicant: <strong style="color: #CE202F;">{{ application.full_name }}</strong> for 
+            <strong style="color: #2C2C2C;">{{ application.link.job.title|default:"General Application" }}</strong>
+        </p>
+    </div>
+    <a href="{% url 'view-detailed-applications' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Applications
+    </a>
+</div>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="row g-4">
+        <!-- Left Column: Applicant Details -->
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-person-badge"></i> Applicant Details
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ form.full_name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.phone_number|as_crispy_field }}
+                        </div>
+                        <div class="col-12">
+                            {{ form.email|as_crispy_field }}
+                        </div>
+                        <div class="col-12">
+                            {{ form.cover_letter|as_crispy_field }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Interview Status -->
+        <div class="col-lg-5">
+            <div class="card sticky-top" style="top: 180px;">
+                <div class="card-header">
+                    <i class="bi bi-clipboard-check"></i> Interview Status
+                </div>
+                
+                {% if application.overall_status != 'review' %}
+                    <div class="alert {% if application.overall_status == 'hired' %}alert-success{% else %}alert-danger{% endif %} m-3 mb-0" role="alert" style="border-radius: 0; border: none; border-left: 4px solid {% if application.overall_status == 'hired' %}#28A745{% else %}#CE202F{% endif %};">
+                        <strong><i class="bi bi-{% if application.overall_status == 'hired' %}check-circle-fill{% else %}x-circle-fill{% endif %}"></i> Application {{ application.get_overall_status_display }}</strong><br>
+                        <small>This application is closed. All fields are locked.</small>
+                    </div>
+                {% endif %}
+
+                <div class="card-body" style="padding: 1.5rem;">
+                    <!-- Interview Stages List -->
+                    <ul class="list-group list-group-flush" style="margin: -1.5rem; margin-top: 0;">
+                        
+                        <!-- Stage 1: Phone Interview -->
+                        <li class="list-group-item {% if application.current_stage == 1 %}border-start border-4 border-danger{% endif %}" style="padding: 1.5rem; {% if application.current_stage == 1 %}background-color: rgba(206, 32, 47, 0.05);{% endif %}">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-secondary me-2" style="font-size: 0.7rem;">Stage 1</span>
+                                <h6 class="mb-0" style="text-transform: none; letter-spacing: 0;">
+                                    <i class="bi bi-telephone"></i> Phone Interview
+                                </h6>
+                            </div>
+                            {{ form.phone_status|as_crispy_field }}
+                            {{ form.phone_comment|as_crispy_field }}
+                        </li>
+
+                        <!-- Stage 2: HR Interview -->
+                        <li class="list-group-item {% if application.current_stage == 2 %}border-start border-4 border-danger{% endif %}" style="padding: 1.5rem; {% if application.current_stage == 2 %}background-color: rgba(206, 32, 47, 0.05);{% endif %}">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-secondary me-2" style="font-size: 0.7rem;">Stage 2</span>
+                                <h6 class="mb-0" style="text-transform: none; letter-spacing: 0;">
+                                    <i class="bi bi-people"></i> HR Interview
+                                </h6>
+                            </div>
+                            {{ form.hr_status|as_crispy_field }}
+                            {{ form.hr_comment|as_crispy_field }}
+                        </li>
+
+                        <!-- Stage 3: Technical Interview -->
+                        <li class="list-group-item {% if application.current_stage == 3 %}border-start border-4 border-danger{% endif %}" style="padding: 1.5rem; {% if application.current_stage == 3 %}background-color: rgba(206, 32, 47, 0.05);{% endif %}">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-secondary me-2" style="font-size: 0.7rem;">Stage 3</span>
+                                <h6 class="mb-0" style="text-transform: none; letter-spacing: 0;">
+                                    <i class="bi bi-laptop"></i> Technical Interview
+                                </h6>
+                            </div>
+                            {{ form.technical_status|as_crispy_field }}
+                            {{ form.technical_comment|as_crispy_field }}
+                        </li>
+                        
+                        <!-- Stage 4: CEO Interview -->
+                        <li class="list-group-item {% if application.current_stage == 4 %}border-start border-4 border-danger{% endif %}" style="padding: 1.5rem; {% if application.current_stage == 4 %}background-color: rgba(206, 32, 47, 0.05);{% endif %}">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-secondary me-2" style="font-size: 0.7rem;">Stage 4</span>
+                                <h6 class="mb-0" style="text-transform: none; letter-spacing: 0;">
+                                    <i class="bi bi-star"></i> CEO Interview
+                                </h6>
+                            </div>
+                            {{ form.ceo_status|as_crispy_field }}
+                            {{ form.ceo_comment|as_crispy_field }}
+                        </li>
+                    </ul>
+                </div>
+
+                {% if application.overall_status == 'review' %}
+                <div class="card-footer" style="background-color: #FAFAFA; border-top: 2px solid #EEEEEE; padding: 1.5rem;">
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" style="padding: 1rem;">
+                            <i class="bi bi-check-circle-fill"></i> Save Changes
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    /* Additional styling for form fields to match Corona theme */
+    .form-control, .form-select {
+        border-radius: 0;
+        border: 2px solid #EEEEEE;
+        padding: 0.75rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #CE202F;
+        box-shadow: 0 0 0 0.2rem rgba(206, 32, 47, 0.15);
+    }
+    
+    label {
+        font-weight: 600;
+        color: #2C2C2C;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+    }
+    
+    /* Remove default list item hover from base.html for this specific page */
+    .list-group-item:hover {
+        background-color: inherit !important;
+        border-left: inherit !important;
+        padding-left: 1.5rem !important;
+    }
+    
+    /* Keep the current stage highlighted on hover */
+    .list-group-item.border-start:hover {
+        background-color: rgba(206, 32, 47, 0.05) !important;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 991px) {
+        .sticky-top {
+            position: relative !important;
+            top: 0 !important;
+        }
+    }
+    
+    /* Ensure proper spacing in form fields */
+    .mb-3 {
+        margin-bottom: 1.5rem !important;
+    }
+</style>
+{% endblock %}

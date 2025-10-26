@@ -1,0 +1,35 @@
+{% extends 'jobs/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Generate Application Link{% endblock %}
+
+{% block content %}
+<div class="col-md-8 mx-auto">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="mb-0">Generate a Temporary Application Link</h3>
+            <p class="text-muted mb-0">This creates a unique, single-use link for a detailed application.</p>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ form.job.id_for_label }}" class="form-label">{{ form.job.label }}</label>
+                    {{ form.job }}
+                    <div class="form-text">{{ form.job.help_text }}</div>
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.duration_days.id_for_label }}" class="form-label">{{ form.duration_days.label }}</label>
+                    {{ form.duration_days }}
+                    <div class="form-text">{{ form.duration_days.help_text }}</div>
+                </div>
+                <div class="d-flex justify-content-end mt-4">
+                    <a href="{% url 'hr-dashboard' %}" class="btn btn-secondary me-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-magic"></i> Generate Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

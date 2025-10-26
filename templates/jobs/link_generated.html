@@ -1,0 +1,45 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}Link Generated Successfully{% endblock %}
+
+{% block content %}
+<div class="col-md-8 mx-auto">
+    <div class="card text-center">
+        <div class="card-body p-5">
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+            <h2 class="mt-3">Link Generated!</h2>
+            <p class="lead text-muted">Share the unique, single-use link below with the applicant.</p>
+            
+            <div class="input-group my-4">
+                <input type="text" class="form-control" value="{{ link }}" id="applicationLink" readonly>
+                <button class="btn btn-outline-secondary" type="button" id="copyButton" onclick="copyLink()">
+                    <i class="bi bi-clipboard"></i> Copy
+                </button>
+            </div>
+
+            <a href="{% url 'hr-dashboard' %}" class="btn btn-primary">&larr; Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyLink() {
+        const linkInput = document.getElementById('applicationLink');
+        const copyButton = document.getElementById('copyButton');
+        
+        linkInput.select();
+        linkInput.setSelectionRange(0, 99999); // For mobile devices
+
+        try {
+            document.execCommand('copy');
+            copyButton.innerHTML = '<i class="bi bi-check-lg"></i> Copied!';
+            setTimeout(() => {
+                copyButton.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        }
+    }
+</script>
+{% endblock %}
+

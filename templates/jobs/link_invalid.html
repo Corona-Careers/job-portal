@@ -1,0 +1,25 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}Invalid Application Link{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9 text-center">
+        <div class="card shadow-sm">
+            <div class="card-body p-5">
+                <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 4rem;"></i>
+                <h2 class="mt-4">Invalid Link</h2>
+                <p class="lead text-muted mt-3">
+                    {{ message|default:"This application link is invalid or could not be found." }}
+                </p>
+                <p class="mt-4">
+                    This can happen if the link was copied incorrectly or has already been used. Please double-check the URL or contact HR if you believe this is an error.
+                </p>
+                <a href="{% url 'job-list' %}" class="btn btn-primary mt-3">
+                    View Current Openings
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

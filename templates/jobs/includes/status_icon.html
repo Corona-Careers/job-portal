@@ -1,0 +1,11 @@
+{% comment %}
+    This template expects a single context variable: 'status'
+{% endcomment %}
+
+{% if status == 'passed' %}
+    <i class="bi bi-check-circle-fill text-success" title="Passed"></i>
+{% elif status == 'failed' %}
+    <i class="bi bi-x-circle-fill text-danger" title="Failed"></i>
+{% else %}
+    <i class="bi bi-hourglass-split text-muted" title="Pending"></i>
+{% endif %}

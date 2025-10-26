@@ -1,0 +1,34 @@
+{% extends 'jobs/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}HR Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-5 col-md-7">
+        <div class="card shadow-lg border-0 rounded-lg mt-5">
+            <div class="card-header">
+                <h3 class="text-center font-weight-light my-4">HR Portal Login</h3>
+            </div>
+            <div class="card-body">
+                {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        Your username and password didn't match. Please try again.
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                        <button class="btn btn-primary w-100" type="submit">Login</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3">
+                <div class="small">HR accounts are created by the site administrator.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

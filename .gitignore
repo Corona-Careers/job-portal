@@ -1,0 +1,92 @@
+# ============================================
+# Django & Python
+# ============================================
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+db.sqlite3
+*.log
+*.pot
+*.mo
+
+# Django migrations (optional to ignore if auto-generated)
+*/migrations/__pycache__/
+# Uncomment the next line if you don't want to track migrations
+# */migrations/*.py
+
+# ============================================
+# Environment / Virtualenv
+# ============================================
+.env
+venv/
+env/
+ENV/
+.venv/
+*.env
+
+# ============================================
+# Media & Static files
+# ============================================
+media/
+staticfiles/
+static/
+collectstatic/
+build/
+dist/
+
+# ============================================
+# IDEs & Editors
+# ============================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ============================================
+# OS-specific files
+# ============================================
+.DS_Store
+Thumbs.db
+
+# ============================================
+# Python Packaging / Cache
+# ============================================
+*.egg-info/
+.eggs/
+pip-log.txt
+pip-delete-this-directory.txt
+__pypackages__/
+.Python
+
+# ============================================
+# Coverage / Testing
+# ============================================
+.coverage
+.tox/
+.nox/
+coverage.xml
+htmlcov/
+.pytest_cache/
+
+# ============================================
+# Jupyter / Notebooks
+# ============================================
+.ipynb_checkpoints
+
+# ============================================
+# Local deployment / Docker / Misc
+# ============================================
+*.bak
+*.swp
+docker-compose.override.yml
+*.pid
+*.seed
+*.pid.lock
+
+# ============================================
+# VSCode local history / settings
+# ============================================
+.history/
+.settings/

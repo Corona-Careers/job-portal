@@ -1,0 +1,189 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}HR Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">HR Dashboard</h1>
+    <div>
+        <a href="{% url 'job-create' %}" class="btn btn-primary me-2"><i class="bi bi-plus-circle"></i> Post New Job</a>
+        <a href="{% url 'generate-link' %}" class="btn btn-outline-primary"><i class="bi bi-link-45deg"></i> Generate Link</a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-briefcase-fill me-2"></i>Your Posted Jobs</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if jobs %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-tag me-2"></i>Title</th>
+                            <th><i class="bi bi-toggle-on me-2"></i>Status</th>
+                            <th><i class="bi bi-people me-2"></i>Submissions</th>
+                            <th><i class="bi bi-gear me-2"></i>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in jobs %}
+                        <tr>
+                            <td>
+                                <div>
+                                    <a href="{% url 'job-detail' job.pk %}" class="fw-bold">{{ job.title }}</a>
+                                    <div class="text-muted small">{{ job.location }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if job.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Disabled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'view-cv-submissions' job.pk %}" class="btn btn-sm btn-outline-info">
+                                    {{ job.submissions.count }} CVs
+                                </a>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'job-update' job.pk %}" class="btn btn-sm btn-secondary" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'job-toggle-status' job.pk %}" class="btn btn-sm btn-warning" title="Toggle Status">
+                                        {% if job.is_active %}<i class="bi bi-pause-circle"></i>{% else %}<i class="bi bi-play-circle"></i>{% endif %}
+                                    </a>
+                                    <a href="{% url 'job-delete' job.pk %}" class="btn btn-sm btn-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="bi bi-briefcase" style="font-size: 4rem; color: var(--corona-red); opacity: 0.3;"></i>
+                </div>
+                <h4 class="corona-heading d-inline-block">No Jobs Posted Yet</h4>
+                <p class="text-muted mb-4">Start by creating your first job posting to attract talented candidates.</p>
+                <a href="{% url 'job-create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>Create Your First Job
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-file-earmark-person me-2"></i>Recent CV Submissions</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for sub in recent_submissions %}
+                <a href="{% url 'view-cv-submissions' sub.job.pk %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            <i class="bi bi-person-circle" style="font-size: 1.5rem; color: var(--corona-red);"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <strong>{{ sub.applicant_name }}</strong> applied for <strong class="text-muted">{{ sub.job.title }}</strong>
+                            <div class="text-muted small mt-1">
+                                <i class="bi bi-clock me-1"></i>{{ sub.submitted_at|timesince }} ago
+                            </div>
+                        </div>
+                        <div class="ms-auto">
+                            <i class="bi bi-chevron-right" style="color: var(--corona-red);"></i>
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="list-group-item text-center py-4">
+                    <i class="bi bi-inbox" style="font-size: 2.5rem; color: var(--corona-red); opacity: 0.3;"></i>
+                    <h6 class="mt-3 text-muted">NO RECENT CV SUBMISSIONS</h6>
+                    <p class="small text-muted mb-0">CV submissions will appear here once candidates start applying.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Recent Detailed Applications</h5>
+                <a href="{% url 'view-detailed-applications' %}" class="text-white text-decoration-none">
+                    <i class="bi bi-arrow-right-circle-fill"></i>
+                </a>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for app in recent_applications %}
+                <div class="list-group-item">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            <i class="bi bi-file-text-fill" style="font-size: 1.5rem; color: var(--corona-red);"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <strong>{{ app.full_name }}</strong> submitted a detailed application
+                            <div class="text-muted small mt-1">
+                                <i class="bi bi-clock me-1"></i>{{ app.submitted_at|timesince }} ago
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="list-group-item text-center py-4">
+                    <i class="bi bi-clipboard-check" style="font-size: 2.5rem; color: var(--corona-red); opacity: 0.3;"></i>
+                    <h6 class="mt-3 text-muted">NO RECENT APPLICATIONS</h6>
+                    <p class="small text-muted mb-0">Detailed applications will appear here once submitted.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section - Corona Style -->
+<div class="corona-section">
+    <div class="container">
+        <h3 class="corona-heading">Dashboard Statistics</h3>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card border-0" style="background: linear-gradient(135deg, var(--corona-red), var(--corona-dark-red)); color: white;">
+                    <div class="card-body py-4">
+                        <i class="bi bi-briefcase-fill mb-3" style="font-size: 2.5rem;"></i>
+                        <h2 class="mb-1" style="color: white;">{{ jobs|length }}</h2>
+                        <p class="mb-0 text-uppercase" style="font-size: 0.9rem; letter-spacing: 1px;">Total Jobs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-0" style="background: var(--white); border: 2px solid var(--corona-red);">
+                    <div class="card-body py-4">
+                        <i class="bi bi-people-fill mb-3" style="font-size: 2.5rem; color: var(--corona-red);"></i>
+                        <h2 class="mb-1" style="color: var(--corona-red);">{{ recent_submissions|length }}</h2>
+                        <p class="mb-0 text-uppercase text-muted" style="font-size: 0.9rem; letter-spacing: 1px;">CV Submissions</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card border-0" style="background: var(--white); border: 2px solid var(--corona-red);">
+                    <div class="card-body py-4">
+                        <i class="bi bi-file-text-fill mb-3" style="font-size: 2.5rem; color: var(--corona-red);"></i>
+                        <h2 class="mb-1" style="color: var(--corona-red);">{{ recent_applications|length }}</h2>
+                        <p class="mb-0 text-uppercase text-muted" style="font-size: 0.9rem; letter-spacing: 1px;">Applications</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

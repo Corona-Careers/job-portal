@@ -1,0 +1,33 @@
+{% extends 'jobs/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Detailed Application
+{% endblock %}
+
+{% block content %}
+<div class="col-md-8 mx-auto">
+    <div class="card">
+        <div class="card-header text-center">
+            <h3 class="mb-0">Detailed Application Form</h3>
+            {% if link.job %}
+                <p class="text-muted mb-0">For position: {{ link.job.title }}</p>
+            {% else %}
+                <p class="text-muted mb-0">General Application</p>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">Submit Detailed Application</button>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer text-center text-muted small">
+            This is a single-use, secure application link.
+        </div>
+    </div>
+</div>
+{% endblock %}

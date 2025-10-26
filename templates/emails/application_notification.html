@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New Application Notification</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        h2 { color: #0055a5; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        td, th { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; width: 30%; }
+    </style>
+</head>
+<body>
+    <h2>New Application for {{ job.title }}</h2>
+
+    <p>Hello HR Team,</p>
+    <p>A new application has been submitted for the position <strong>{{ job.title }}</strong>.</p>
+
+    <table>
+        {% if applicant.applicant_name %}
+        <tr><th>Applicant Name</th><td>{{ applicant.applicant_name }}</td></tr>
+        <tr><th>Email</th><td>{{ applicant.applicant_email }}</td></tr>
+        {% elif applicant.full_name %}
+        <tr><th>Full Name</th><td>{{ applicant.full_name }}</td></tr>
+        <tr><th>Email</th><td>{{ applicant.email }}</td></tr>
+        <tr><th>Phone Number</th><td>{{ applicant.phone_number }}</td></tr>
+        <tr><th>Cover Letter</th><td>{{ applicant.cover_letter|linebreaksbr }}</td></tr>
+        {% endif %}
+    </table>
+
+    {% if applicant.cv_file %}
+        <p>Attached CV: {{ applicant.cv_file.name }}</p>
+    {% endif %}
+
+    <p style="margin-top: 20px;">Best regards,<br>Job Portal System</p>
+</body>
+</html>

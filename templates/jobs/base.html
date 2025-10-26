@@ -1,0 +1,480 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Job Portal{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --corona-red: #CE202F;
+            --corona-dark-red: #A11826;
+            --corona-light-red: #E8354A;
+            --dark-gray: #2C2C2C;
+            --light-gray: #F5F5F5;
+            --white: #FFFFFF;
+            --cream: #FAFAFA;
+        }
+        
+        body {
+            background-color: var(--cream);
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background-color: var(--white) !important;
+            box-shadow: 0 2px 10px rgba(206, 32, 47, 0.1);
+            padding: 0 0 1.2rem 0;
+            border-bottom: 3px solid var(--corona-red);
+        }
+        
+        .navbar-brand {
+            color: var(--corona-red) !important;
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .navbar-brand:hover {
+            color: var(--corona-dark-red) !important;
+        }
+        
+        .navbar-text {
+            color: var(--dark-gray) !important;
+            font-weight: 600;
+        }
+        
+        .nav-link {
+            color: var(--dark-gray) !important;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+            padding: 0.8rem 1.2rem !important;
+        }
+        
+        .nav-link:hover {
+            color: var(--corona-red) !important;
+        }
+        
+        .card {
+            border-radius: 0;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            background: var(--white);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 30px rgba(206, 32, 47, 0.15);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        
+        .card-header {
+            background-color: var(--corona-red);
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            padding: 1.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--corona-red);
+            border: 2px solid var(--corona-red);
+            border-radius: 0;
+            padding: 0.8rem 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--corona-dark-red);
+            border-color: var(--corona-dark-red);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(206, 32, 47, 0.3);
+        }
+        
+        .btn-outline-primary {
+            color: var(--corona-red);
+            border: 2px solid var(--corona-red);
+            background: transparent;
+            border-radius: 0;
+            padding: 0.8rem 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover, .btn-outline-primary:focus {
+            background-color: var(--corona-red);
+            border-color: var(--corona-red);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline-secondary {
+            color: var(--dark-gray);
+            border: 2px solid var(--dark-gray);
+            border-radius: 0;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: var(--dark-gray);
+            border-color: var(--dark-gray);
+            color: var(--white);
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+        
+        .btn-secondary {
+            background-color: var(--dark-gray);
+            border: none;
+            color: var(--white);
+            font-weight: 600;
+        }
+        
+        .btn-warning {
+            background-color: #FFC107;
+            border: none;
+            color: var(--dark-gray);
+            font-weight: 600;
+        }
+        
+        .btn-danger {
+            background-color: var(--corona-dark-red);
+            border: none;
+            color: var(--white);
+            font-weight: 600;
+        }
+        
+        .btn-outline-info {
+            color: var(--corona-red);
+            border: 1px solid var(--corona-red);
+            background: transparent;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .btn-outline-info:hover {
+            background-color: var(--corona-red);
+            color: var(--white);
+        }
+        
+        .badge {
+            border-radius: 0;
+            padding: 0.6rem 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge.bg-success {
+            background-color: #28A745 !important;
+        }
+        
+        .badge.bg-secondary {
+            background-color: var(--dark-gray) !important;
+        }
+        
+        .table {
+            border: none;
+            background: var(--white);
+        }
+        
+        .table thead th {
+            border: none;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding: 1.2rem;
+        }
+        
+        .table tbody td {
+            border: none;
+            padding: 1.2rem;
+            border-bottom: 1px solid #EEEEEE;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(206, 32, 47, 0.05);
+        }
+        
+        .list-group-item {
+            border: none;
+            border-bottom: 1px solid #EEEEEE;
+            background: var(--white);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .list-group-item:hover, .list-group-item-action:hover {
+            background-color: rgba(206, 32, 47, 0.05);
+            border-left: 4px solid var(--corona-red);
+            padding-left: 1.4rem;
+        }
+        
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+        
+        main {
+            min-height: calc(100vh - 200px);
+            padding: 2rem 0;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            /* color: var(--dark-gray); */
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+        
+        h1::after, h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: var(--corona-red);
+            margin-top: 0.5rem;
+        }
+        
+        .fw-bold {
+            color: var(--corona-red);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s ease;
+        }
+        
+        .fw-bold:hover {
+            color: var(--corona-dark-red);
+        }
+        
+        .text-muted {
+            color: #777777 !important;
+        }
+        
+        /* Corona-style sections */
+        .corona-section {
+            padding: 3rem 0;
+            background: var(--white);
+            margin: 2rem 0;
+            border-top: 2px solid var(--light-gray);
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        /* Corona-style headings with red accent */
+        .corona-heading {
+            position: relative;
+            padding-left: 1rem;
+            border-left: 4px solid var(--corona-red);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.8rem;
+            }
+            
+            .card {
+                margin-bottom: 1rem;
+            }
+            
+            h1::after, h2::after {
+                width: 40px;
+            }
+        }
+
+        .site-footer {
+            /* This is the primary red color from the image */
+            background-color: #CE202F;
+            color: #ffffff; /* All text should be white */
+            padding-top: 4rem;
+            padding-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .site-footer h5 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-transform: capitalize;
+            font-size: 1.1rem;
+        }
+
+        /* Styling for the footer links */
+        .footer-links {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Social Media Icons */
+        .social-icons a {
+            color: #ffffff;
+            font-size: 1.2rem;
+            margin-left: 1rem; /* Spacing between icons */
+            text-decoration: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .social-icons a:hover {
+            opacity: 0.8;
+        }
+
+        /* Divider Line */
+        .footer-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Bottom Footer Copyright Text */
+        .footer-bottom {
+            font-size: 0.9rem;
+        }
+        .footer-bottom a {
+             color: #ffffff;
+             text-decoration: none;
+        }
+         .footer-bottom a:hover {
+             text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg mb-4 fixed-top">
+        <div class="container">
+            <a class="" href="{% url 'job-list' %}">
+                <img src="{% static 'img/corona_mono_logo.svg' %}" width="151" height="131" alt="" srcset="">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="navbar-text me-3">
+                                Welcome, {{ user.username }}
+                            </span>
+                        </li>
+                        {% if user.is_staff %}
+                        <li class="nav-item">
+                           <a class="nav-link" href="{% url 'hr-dashboard' %}">HR Dashboard</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <form action="{% url 'logout' %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Logout</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="btn btn-primary" href="{% url 'login' %}">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="margin-top: 160px;">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row gy-4 gy-lg-0">
+
+                <div class="col-lg-4 col-md-12 text-center text-lg-start">
+                     <img src="https://corona.eg/wp-content/uploads/2023/09/Corona_Logo.svg" alt="Corona Logo" class="mb-3" style="width: 151px;">
+                </div>
+
+                <div class="col-lg-2 col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="https://corona.eg/about/">About</a></li>
+                        <li><a href="https://corona.eg/blog/">Blog</a></li>
+                        <li><a href="https://corona.eg/become-a-partner/exporting/">Exporting</a></li>
+                        <li><a href="https://corona.eg/become-a-partner/retailers/">Retailers</a></li>
+                        <li><a href="https://corona.eg/careers/">Careers</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-4">
+                    <h5>Contact Info</h5>
+                    <ul class="footer-links">
+                        <li>Engineering Square | Industrial Park 6th of October Egypt</li>
+                        <li><a href="info@corona.eg">info@corona.eg</a></li>
+                        <li><a href="tel:+201113111919">+20-111-311-1919</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-4 text-center text-md-end">
+                    <div class="social-icons">
+                        <a href="https://www.facebook.com/Corona.eg/" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://eg.linkedin.com/company/coronaeg" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.instagram.com/corona.eg/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="footer-divider my-4">
+
+            <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <p class="mb-2 mb-md-0">© 2025 Corona. All Rights Reserved.</p>
+                <p class="mb-0">Developed by <a href="https://lilspider.com/" rel="noopener" target="_blank">lilSpider</a>.</p>
+            </div>
+
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

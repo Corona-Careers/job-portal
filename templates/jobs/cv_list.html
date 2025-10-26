@@ -1,0 +1,49 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}CVs for {{ job.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h2">CV Submissions</h1>
+        <p class="lead text-muted">For job: <strong>{{ job.title }}</strong></p>
+    </div>
+    <a href="{% url 'hr-dashboard' %}" class="btn btn-outline-secondary">&larr; Back to Dashboard</a>
+</div>
+
+
+<div class="card">
+    <div class="card-body">
+        {% if submissions %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Applicant Name</th>
+                        <th>Email</th>
+                        <th>Submitted At</th>
+                        <th>Download CV</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in submissions %}
+                    <tr>
+                        <td>{{ sub.applicant_name }}</td>
+                        <td>{{ sub.applicant_email }}</td>
+                        <td>{{ sub.submitted_at|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            <a href="{{ sub.cv_file.url }}" class="btn btn-sm btn-info" target="_blank">
+                                <i class="bi bi-download"></i> Download
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p class="text-center my-4">No CVs have been submitted for this job yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
