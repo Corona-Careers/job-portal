@@ -4,9 +4,10 @@ from .models import Job, CVSubmission, DetailedApplication, ApplicationLink
 class JobForm(forms.ModelForm):
     class Meta:
         model = Job
-        fields = ['title', 'description', 'requirements', 'location', 'is_active']
+        fields = ['title','department', 'description', 'requirements', 'location', 'is_active']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'department': forms.Select(attrs={'class': 'form-select'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
             'requirements': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
             'location': forms.TextInput(attrs={'class': 'form-control'}),
@@ -16,11 +17,12 @@ class JobForm(forms.ModelForm):
 class CVSubmissionForm(forms.ModelForm):
     class Meta:
         model = CVSubmission
-        fields = ['applicant_name', 'applicant_email', 'cv_file']
+        fields = ['applicant_name', 'applicant_email', 'cv_file', 'department']
         widgets = {
             'applicant_name': forms.TextInput(attrs={'class': 'form-control'}),
             'applicant_email': forms.EmailInput(attrs={'class': 'form-control'}),
             'cv_file': forms.FileInput(attrs={'class': 'form-control'}),
+            'department': forms.Select(attrs={'class': 'form-select'}),
         }
 
 class DetailedApplicationForm(forms.ModelForm):
@@ -61,16 +63,16 @@ class ApplicationStatusUpdateForm(forms.ModelForm):
     class Meta:
         model = DetailedApplication
         fields = [
-            # New editable applicant fields
-            'full_name', 'email', 'phone_number', 'cover_letter',
             
             # Existing status fields
+            'interview_date',
             'phone_status', 'phone_comment',
             'hr_status', 'hr_comment',
             'technical_status', 'technical_comment',
             'ceo_status', 'ceo_comment',
         ]
         widgets = {
+            'interview_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'cover_letter': forms.Textarea(attrs={'rows': 5}),
             'phone_comment': forms.Textarea(attrs={'rows': 2}),
             'hr_comment': forms.Textarea(attrs={'rows': 2}),
@@ -86,13 +88,6 @@ class ApplicationStatusUpdateForm(forms.ModelForm):
             
         app = self.instance
         current_stage = app.current_stage
-
-        # --- Logic for Applicant Details ---
-        # Make these fields always active
-        self.fields['full_name'].disabled = False
-        self.fields['email'].disabled = False
-        self.fields['phone_number'].disabled = False
-        self.fields['cover_letter'].disabled = False
 
         # --- Logic for Status Fields ---
         stages_fields = {
@@ -124,4 +119,3 @@ class ApplicationStatusUpdateForm(forms.ModelForm):
         if app.overall_status != 'review':
              for field_name in self.fields:
                 self.fields[field_name].disabled = True
-

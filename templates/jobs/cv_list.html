@@ -5,36 +5,83 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="h2">CV Submissions</h1>
-        <p class="lead text-muted">For job: <strong>{{ job.title }}</strong></p>
+        {% if job %}
+            <h1 class="h2">CV Submissions</h1>
+            <p class="lead text-muted">For job: <strong>{{ job.title }}</strong></p>
+        {% else %}
+            <h1 class="h2">General CV Submissions</h1>
+            <p class="lead text-muted">CVs submitted without selecting a specific job</p>
+        {% endif %}
     </div>
     <a href="{% url 'hr-dashboard' %}" class="btn btn-outline-secondary">&larr; Back to Dashboard</a>
 </div>
 
+<!-- 🔍 Search + Department Filter -->
+<form method="get" class="d-flex gap-2 mb-4">
+    <input 
+    type="text" 
+    name="q" 
+    class="form-control" 
+    placeholder="Search by name or email..." 
+    value="{{ query|default_if_none:'' }}">
+
+    {% if filter_enabled %}
+        <select name="department" class="form-select" style="max-width: 220px;">
+            <option value="">All Departments</option>
+            {% for dep in departments %}
+                <option value="{{ dep }}" {% if selected_department == dep %}selected{% endif %}>{{ dep }}</option>
+            {% endfor %}
+        </select>
+    {% endif %}
+    
+    <button type="submit" class="btn btn-danger">Search</button>
+</form>
+
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 
 <div class="card">
     <div class="card-body">
         {% if submissions %}
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped align-middle">
                 <thead>
                     <tr>
                         <th>Applicant Name</th>
                         <th>Email</th>
+                        <th>Department</th>
                         <th>Submitted At</th>
-                        <th>Download CV</th>
+                        <th>View CV</th>
+                        <th>Send Application Link</th> <!-- 🆕 New column -->
                     </tr>
                 </thead>
                 <tbody>
                     {% for sub in submissions %}
                     <tr>
-                        <td>{{ sub.applicant_name }}</td>
+                        <td><strong>{{ sub.applicant_name }}</strong></td>
                         <td>{{ sub.applicant_email }}</td>
+                        <td>{{ sub.get_department_display }}</td>
                         <td>{{ sub.submitted_at|date:"Y-m-d H:i" }}</td>
                         <td>
-                            <a href="{{ sub.cv_file.url }}" class="btn btn-sm btn-info" target="_blank">
-                                <i class="bi bi-download"></i> Download
+                            <a href="{{ sub.cv_file.url }}" class="btn btn-sm btn-outline-info" target="_blank">
+                                <i class="bi bi-download"></i> View
                             </a>
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'generate-link-from-cv' sub.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-link-45deg"></i> Send Link
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
@@ -42,8 +89,13 @@
             </table>
         </div>
         {% else %}
-            <p class="text-center my-4">No CVs have been submitted for this job yet.</p>
+            {% if job %}
+                <p class="text-center my-4">No CVs have been submitted for this job yet.</p>
+            {% else %}
+                <p class="text-center my-4">No general CVs found.</p>
+            {% endif %}
         {% endif %}
     </div>
 </div>
+
 {% endblock %}

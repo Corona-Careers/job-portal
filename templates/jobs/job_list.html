@@ -1,16 +1,52 @@
 {% extends 'jobs/base.html' %}
-
 {% block title %}Available Jobs{% endblock %}
 
 {% block content %}
-<div class="text-center mb-5">
+<div class="text-center mb-5" data-aos="fade-down">
     <h1 class="display-4">Find Your Next Opportunity</h1>
     <p class="lead text-muted">Browse our open positions and find a job that's right for you.</p>
 </div>
 
-<div class="row">
+<div class="card mb-4 border-0 shadow-sm" style="background-color: #f8f9fa;" data-aos="fade-up">
+    <div class="card-body p-4">
+        <div class="row g-3 justify-content-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" id="job-live-search" class="form-control border-start-0" placeholder="Search by title or keyword...">
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <select id="filter-dept" class="form-select">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                        {% if dept %}<option value="{{ dept }}">{{ dept }}</option>{% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <select id="filter-loc" class="form-select">
+                    <option value="">All Locations</option>
+                    {% for loc in locations %}
+                        {% if loc %}<option value="{{ loc }}">{{ loc }}</option>{% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-1 d-flex align-items-center justify-content-center">
+                <div id="job-spinner" class="spinner-border spinner-border-sm text-danger" style="display:none;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="job-results">
     {% for job in jobs %}
-        <div class="col-md-6 col-lg-4 mb-4">
+        <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
             <div class="card h-100">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{ job.title }}</h5>
@@ -31,4 +67,110 @@
         </div>
     {% endfor %}
 </div>
+
+<div class="text-center mt-5">
+    <hr class="my-4" style="border-top: 2px solid #eee;">
+    <p class="lead text-muted mb-3">Didn’t find a position that matches your skills?</p>
+    <a href="{% url 'general-application' %}" class="btn btn-outline-danger btn-lg">
+        <i class="bi bi-file-earmark-person"></i> Apply Generally
+    </a>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('job-live-search');
+    const deptInput = document.getElementById('filter-dept');
+    const locInput = document.getElementById('filter-loc');
+    
+    const resultsDiv = document.getElementById('job-results');
+    const spinner = document.getElementById('job-spinner');
+    let timeout = null;
+
+    // Trigger search when ANY input changes
+    searchInput.addEventListener('keyup', triggerSearch);
+    deptInput.addEventListener('change', triggerSearch);
+    locInput.addEventListener('change', triggerSearch);
+
+    function triggerSearch() {
+        clearTimeout(timeout);
+        timeout = setTimeout(fetchResults, 300); // Small delay for smoother feel
+    }
+
+    function fetchResults() {
+        const query = searchInput.value.trim();
+        const dept = deptInput.value;
+        const loc = locInput.value;
+
+        spinner.style.display = 'inline-block';
+
+        // Build URL with all 3 parameters
+        const params = new URLSearchParams({
+            q: query,
+            department: dept,
+            location: loc
+        });
+
+        fetch(`/jobs/search/?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => updateJobs(data, query))
+            .catch(err => console.error(err))
+            .finally(() => spinner.style.display = 'none');
+    }
+
+    function highlight(text, query) {
+        if (!query) return text;
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<mark class="bg-warning text-dark">$1</mark>');
+    }
+
+    function updateJobs(data, query = '') {
+        resultsDiv.innerHTML = '';
+        const jobs = data.results;
+
+        if (jobs.length === 0) {
+            resultsDiv.innerHTML = `
+                <div class="col-12">
+                    <div class="card text-center p-5 bg-light border-0">
+                        <i class="bi bi-search display-4 text-muted mb-3"></i>
+                        <p class="lead text-muted">No jobs found matching your criteria.</p>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="resetFilters()">Clear Filters</button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        jobs.forEach(job => {
+            const card = `
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">${highlight(job.title, query)}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <i class="bi bi-geo-alt-fill"></i> ${highlight(job.location, query)}
+                            </h6>
+                            <p class="card-text text-secondary small flex-grow-1">
+                                ${highlight(job.description, query)}
+                            </p>
+                            <a href="/jobs/${job.id}/" class="btn btn-primary mt-auto align-self-start">View Details</a>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 text-muted small">
+                            Posted ${job.created_since}
+                        </div>
+                    </div>
+                </div>
+            `;
+            resultsDiv.insertAdjacentHTML('beforeend', card);
+        });
+    }
+
+    // Helper to reset inputs (optional)
+    window.resetFilters = function() {
+        searchInput.value = '';
+        deptInput.value = '';
+        locInput.value = '';
+        fetchResults();
+    };
+});
+</script>
 {% endblock %}

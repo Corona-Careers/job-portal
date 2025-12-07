@@ -10,14 +10,24 @@
     <div class="card">
         <div class="card-header text-center">
             <h3 class="mb-0">Detailed Application Form</h3>
-            {% if link.job %}
-                <p class="text-muted mb-0">For position: {{ link.job.title }}</p>
+            {% if job %}
+                <p class="text-muted mb-0">For position: {{ job.title }}</p>
             {% else %}
                 <p class="text-muted mb-0">General Application</p>
             {% endif %}
         </div>
+
         <div class="card-body">
-            <form method="post">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <div class="d-grid">
@@ -25,6 +35,7 @@
                 </div>
             </form>
         </div>
+
         <div class="card-footer text-center text-muted small">
             This is a single-use, secure application link.
         </div>

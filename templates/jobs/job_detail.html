@@ -1,67 +1,172 @@
 {% extends 'jobs/base.html' %}
 
-{% block title %}{{ job.title }}{% endblock %}
+{% block title %}
+  {% if job %}{{ job.title }}{% else %}General Application{% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-lg-8" data-aos="fade-right">
         <div class="card">
             <div class="card-body p-4">
-                <div class="mb-4">
-                    <h1 class="h3">{{ job.title }}</h1>
-                    <div class="text-muted"><i class="bi bi-geo-alt-fill"></i> {{ job.location }}</div>
-                    <div class="text-muted small">Posted {{ job.created_at|timesince }} ago</div>
-                </div>
+                
+                <!-- ✅ CONDITIONAL JOB INFO -->
+                {% if job %}
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            
+                            <div>
+                                <h1 class="h3">{{ job.title }}</h1>
+                                <div class="text-muted"><i class="bi bi-geo-alt-fill"></i> {{ job.location }}</div>
+                                <div class="text-muted small">Posted {{ job.created_at|timesince }} ago</div>
+                            </div>
 
-                <hr>
+                            <div class="dropdown ms-3">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="shareDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-share-fill"></i> Share
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="shareDropdown">
+                                    <li>
+                                        <button class="dropdown-item" onclick="nativeShare()">
+                                            <i class="bi bi-phone me-2"></i> Share via...
+                                        </button>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" target="_blank">
+                                            <i class="bi bi-linkedin text-primary me-2"></i> LinkedIn
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="https://api.whatsapp.com/send?text=Check%20out%20this%20job:%20{{ job.title }}%20{{ request.build_absolute_uri }}" target="_blank">
+                                            <i class="bi bi-whatsapp text-success me-2"></i> WhatsApp
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="mailto:?subject=Job Opportunity: {{ job.title }}&body=I found this job and thought you might be interested: {{ request.build_absolute_uri }}">
+                                            <i class="bi bi-envelope me-2"></i> Email
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <button class="dropdown-item" onclick="copyToClipboard()">
+                                            <i class="bi bi-link-45deg me-2"></i> Copy Link
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="mb-4">
-                    <h5 class="mb-3">Job Description</h5>
-                    <p>{{ job.description|linebreaks }}</p>
-                </div>
+                    <hr>
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3">Job Description</h5>
+                        <p>{{ job.description|linebreaks }}</p>
+                    </div>
 
-                <div class="mb-4">
-                    <h5 class="mb-3">Requirements</h5>
-                    <p>{{ job.requirements|linebreaks }}</p>
-                </div>
+                    <div class="mb-4">
+                        <h5 class="mb-3">Requirements</h5>
+                        <p>{{ job.requirements|linebreaks }}</p>
+                    </div>
+                {% else %}
+                    <div class="mb-4 text-center">
+                        <h1 class="display-5">General Application</h1>
+                        <p class="text-muted">
+                            Submit your CV to be considered for future openings at <strong>Corona</strong>.
+                        </p>
+                    </div>
+                {% endif %}
+                <!-- ✅ END CONDITIONAL SECTION -->
+
             </div>
         </div>
     </div>
-    <div class="col-lg-4">
+
+    <!-- ✅ Application Form Section -->
+    <div class="col-lg-4" data-aos="fade-left" data-aos-delay="200">
         <div class="card sticky-top" style="top: 100px;">
             <div class="card-header text-center">
-                <h5>Apply for this position</h5>
-            </div>            
+                <h5>{% if job %}Apply for this position{% else %}Submit Your CV{% endif %}</h5>
+            </div>
             <div class="card-body">
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
                             {{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
                 {% endif %}
+
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="{{ form.applicant_name.id_for_label }}" class="form-label">Full Name</label>
                         {{ form.applicant_name }}
                     </div>
-                     <div class="mb-3">
+                    <div class="mb-3">
                         <label for="{{ form.applicant_email.id_for_label }}" class="form-label">Email Address</label>
                         {{ form.applicant_email }}
                     </div>
-                     <div class="mb-3">
+                    <div class="mb-3">
+                        {{ form.department.label_tag }}
+                        {{ form.department }}
+                    </div>
+                    <div class="mb-3">
                         <label for="{{ form.cv_file.id_for_label }}" class="form-label">Upload CV</label>
                         {{ form.cv_file }}
                         <div class="form-text">PDF, DOC, DOCX files only.</div>
                     </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Submit Application</button>
+                        <button type="submit" class="btn btn-primary">
+                            {% if job %}Submit Application{% else %}Submit CV{% endif %}
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="bi bi-check-circle me-2"></i> Link copied to clipboard!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+    // 1. Native Web Share API (Works best on mobile)
+    function nativeShare() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ job.title|escapejs }}',
+                text: 'Check out this job opportunity at Corona',
+                url: '{{ request.build_absolute_uri }}'
+            })
+            .catch((error) => console.log('Error sharing', error));
+        } else {
+            alert("Your browser handles sharing via the specific buttons below.");
+        }
+    }
+
+    // 2. Copy to Clipboard Function
+    function copyToClipboard() {
+        const url = '{{ request.build_absolute_uri }}';
+        navigator.clipboard.writeText(url).then(function() {
+            // Show the success toast
+            const toastEl = document.getElementById('copyToast');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }, function(err) {
+            console.error('Could not copy text: ', err);
+        });
+    }
+</script>
+
 {% endblock %}

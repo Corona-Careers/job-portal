@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CV Received - Corona</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px; }
+        .header { border-bottom: 2px solid #CE202F; padding-bottom: 10px; margin-bottom: 20px; }
+        .footer { margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 10px; }
+        h2 { color: #CE202F; margin-top: 0; }
+        .btn { display: inline-block; background-color: #f8f9fa; color: #333; padding: 10px 15px; text-decoration: none; border-radius: 5px; border: 1px solid #ddd; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>CV Received</h2>
+        </div>
+
+        <p>Dear <strong>{{ applicant.applicant_name }}</strong>,</p>
+
+        <p>Thank you for submitting your CV for the position of <strong>{{ job.title|default:"General Application" }}</strong> at Corona.</p>
+
+        <p>We have successfully added your resume to our database.</p>
+
+        <h3>What happens next?</h3>
+        <p>Our HR team will review your qualifications. If your profile matches our current requirements, you will receive a follow-up email with a link to complete your <strong>Detailed Application</strong>.</p>
+
+        <p>Thank you for your interest in joining our team.</p>
+
+        <div class="footer">
+            <p>Best regards,<br>Corona HR Team<br><a href="mailto:hr.career@corona.eg" style="color: #CE202F;">hr.career@corona.eg</a></p>
+        </div>
+    </div>
+</body>
+</html>

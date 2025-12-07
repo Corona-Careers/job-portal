@@ -6,12 +6,15 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h2">HR Dashboard</h1>
     <div>
+        <a href="{% url 'cv-database-folders' %}" class="btn btn-warning me-2 text-dark">
+            <i class="bi bi-folder2-open"></i> CV Database
+        </a>
         <a href="{% url 'job-create' %}" class="btn btn-primary me-2"><i class="bi bi-plus-circle"></i> Post New Job</a>
-        <a href="{% url 'generate-link' %}" class="btn btn-outline-primary"><i class="bi bi-link-45deg"></i> Generate Link</a>
+        <!-- <a href="{% url 'generate-link' %}" class="btn btn-outline-primary"><i class="bi bi-link-45deg"></i> Generate Link</a> -->
     </div>
 </div>
 
-<div class="card mb-4">
+<div class="card mb-4" data-aos="fade-up">
     <div class="card-header">
         <h5 class="mb-0"><i class="bi bi-briefcase-fill me-2"></i>Your Posted Jobs</h5>
     </div>
@@ -23,7 +26,8 @@
                         <tr>
                             <th><i class="bi bi-tag me-2"></i>Title</th>
                             <th><i class="bi bi-toggle-on me-2"></i>Status</th>
-                            <th><i class="bi bi-people me-2"></i>Submissions</th>
+                            <th><i class="bi bi-file-earmark-person me-2"></i>CVs</th>
+                            <th><i class="bi bi-file-earmark-text me-2"></i>Applications</th>
                             <th><i class="bi bi-gear me-2"></i>Actions</th>
                         </tr>
                     </thead>
@@ -45,7 +49,12 @@
                             </td>
                             <td>
                                 <a href="{% url 'view-cv-submissions' job.pk %}" class="btn btn-sm btn-outline-info">
-                                    {{ job.submissions.count }} CVs
+                                    {{ job.cv_count }} CVs
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'view-detailed-applications' %}?job={{ job.pk }}" class="btn btn-sm btn-outline-info">
+                                    {{ job.application_count }} Applications
                                 </a>
                             </td>
                             <td>
@@ -81,7 +90,41 @@
     </div>
 </div>
 
-<div class="row">
+<!-- 🆕 GENERAL SUBMISSIONS SECTION -->
+<div class="card mt-4">
+    <div class="card-header bg-danger text-white">
+        <i class="bi bi-folder-fill me-2"></i> GENERAL SUBMISSIONS
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th><i class="bi bi-tag me-2"></i>Title</th>
+                    <th><i class="bi bi-file-earmark-person me-2"></i>CVs</th>
+                    <th><i class="bi bi-file-earmark-text me-2"></i>Applications</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>General Applications</strong></td>
+                    <td>
+                        <a href="{% url 'view-general-submissions' %}" class="btn btn-sm btn-outline-info">
+                            {{ general_cv_count }} CVs
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'view-general-applications' %}" class="btn btn-sm btn-outline-info">
+                            {{ general_app_count }} Applications
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- <div class="row">
     <div class="col-md-6">
         <div class="card h-100">
             <div class="card-header">
@@ -148,14 +191,14 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Stats Section - Corona Style -->
 <div class="corona-section">
     <div class="container">
-        <h3 class="corona-heading">Dashboard Statistics</h3>
+        <h3 class="corona-heading" data-aos="fade-right">Dashboard Statistics</h3>
         <div class="row text-center">
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
                 <div class="card border-0" style="background: linear-gradient(135deg, var(--corona-red), var(--corona-dark-red)); color: white;">
                     <div class="card-body py-4">
                         <i class="bi bi-briefcase-fill mb-3" style="font-size: 2.5rem;"></i>
@@ -164,21 +207,46 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
                 <div class="card border-0" style="background: var(--white); border: 2px solid var(--corona-red);">
                     <div class="card-body py-4">
+                        <div class="position-relative d-inline-block">
+                            <i class="bi bi-people-fill mb-3" style="font-size: 2.5rem; color: var(--corona-red);"></i>
+                            {% if new_cvs > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ new_cvs }}
+                                </span>
+                            {% endif %}
+                        </div>
                         <i class="bi bi-people-fill mb-3" style="font-size: 2.5rem; color: var(--corona-red);"></i>
-                        <h2 class="mb-1" style="color: var(--corona-red);">{{ recent_submissions|length }}</h2>
+                        <h2 class="mb-1" style="color: var(--corona-red);">{{ total_submissions }}</h2>
                         <p class="mb-0 text-uppercase text-muted" style="font-size: 0.9rem; letter-spacing: 1px;">CV Submissions</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="300">
                 <div class="card border-0" style="background: var(--white); border: 2px solid var(--corona-red);">
                     <div class="card-body py-4">
+                        <div class="position-relative d-inline-block">
+                            <i class="bi bi-file-text-fill mb-3" style="font-size: 2.5rem; color: var(--corona-red);"></i>
+                            {% if new_applications > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ new_applications }}
+                                </span>
+                            {% endif %}
+                        </div>
                         <i class="bi bi-file-text-fill mb-3" style="font-size: 2.5rem; color: var(--corona-red);"></i>
-                        <h2 class="mb-1" style="color: var(--corona-red);">{{ recent_applications|length }}</h2>
+                        <h2 class="mb-1" style="color: var(--corona-red);">{{ total_applications }}</h2>
                         <p class="mb-0 text-uppercase text-muted" style="font-size: 0.9rem; letter-spacing: 1px;">Applications</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="400">
+                <div class="card border-0" style="background: var(--white); border: 2px solid var(--corona-red);">
+                    <div class="card-body py-4">
+                        <i class="bi bi-folder-fill mb-3" style="font-size: 2.5rem; color: var(--corona-red);"></i>
+                        <h2 class="mb-1" style="color: var(--corona-red);">{{ total_general_submissions }}</h2>
+                        <p class="mb-0 text-uppercase text-muted" style="font-size: 0.9rem; letter-spacing: 1px;">General CVs</p>
                     </div>
                 </div>
             </div>

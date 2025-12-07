@@ -82,10 +82,10 @@ WSGI_APPLICATION = 'job_portal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'job_portal_db',
-        'USER': 'jobportaluser',
-        'PASSWORD': 'y3J*%hYTRxTRGRDOwHVMoyejXjZfoJCy',
-        'HOST': 'localhost',
+        'NAME': 'corona-careers_job_portal',
+        'USER': 'corona-careers_job_portal',
+        'PASSWORD': 'HC@corona2025',
+        'HOST': 'postgresql-corona-careers.alwaysdata.net',
         'PORT': '5432',
     }
 }
@@ -115,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Cairo'
 
 USE_I18N = True
 

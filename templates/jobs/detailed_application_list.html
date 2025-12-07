@@ -11,6 +11,20 @@
     <a href="{% url 'hr-dashboard' %}" class="btn btn-outline-secondary">&larr; Back to Dashboard</a>
 </div>
 
+<!-- 🔍 Search + Filters -->
+<form id="filter-form" class="mb-4 d-flex flex-wrap gap-2 justify-content-end">
+    <div class="input-group" style="max-width: 300px;">
+        <input type="text" id="live-search-input" class="form-control" placeholder="Search by name, email, or job...">
+    </div>
+    
+    <select id="filter-status" class="form-select" style="max-width: 200px;">
+        <option value="">All Statuses</option>
+        <option value="review">In Review</option>
+        <option value="hired">Hired</option>
+        <option value="rejected">Rejected</option>
+    </select>
+</form>
+
 <div class="card">
     <div class="card-body p-0">
         {% if applications %}
@@ -28,26 +42,15 @@
                         <th class="pe-4">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="applications-table-body">
                     {% for app in applications %}
                     <tr>
                         <td class="ps-4"><strong>{{ app.full_name }}</strong></td>
                         <td>{{ app.link.job.title|default:"General Application" }}</td>
-                        
-                        <td class="text-center">
-                            {% include 'jobs/includes/status_icon.html' with status=app.phone_status %}
-                        </td>
-                        <td class="text-center">
-                            {% include 'jobs/includes/status_icon.html' with status=app.hr_status %}
-                        </td>
-                        <td class="text-center">
-                            {% include 'jobs/includes/status_icon.html' with status=app.technical_status %}
-                        </td>
-                        <td class="text-center">
-                            {% include 'jobs/includes/status_icon.html' with status=app.ceo_status %}
-                        </td>
-                        
-                        <!-- Overall Status Badge -->
+                        <td class="text-center">{% include 'jobs/includes/status_icon.html' with status=app.phone_status %}</td>
+                        <td class="text-center">{% include 'jobs/includes/status_icon.html' with status=app.hr_status %}</td>
+                        <td class="text-center">{% include 'jobs/includes/status_icon.html' with status=app.technical_status %}</td>
+                        <td class="text-center">{% include 'jobs/includes/status_icon.html' with status=app.ceo_status %}</td>
                         <td>
                             {% if app.overall_status == 'hired' %}
                                 <span class="badge bg-success">Hired</span>
@@ -57,8 +60,6 @@
                                 <span class="badge bg-info">In Review</span>
                             {% endif %}
                         </td>
-
-                        <!-- Actions -->
                         <td class="pe-4">
                             <a href="{% url 'update-application-status' pk=app.pk %}" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-pencil-square"></i> Manage
@@ -71,10 +72,88 @@
         </div>
         {% else %}
             <div class="text-center p-5">
-                <p class="lead">No detailed applications have been submitted yet.</p>
+                <p class="lead">No applications found matching your search.</p>
             </div>
         {% endif %}
     </div>
 </div>
-{% endblock %}
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('live-search-input');
+    const statusFilter = document.getElementById('filter-status');
+    const tableBody = document.getElementById('applications-table-body');
+
+    // 🧠 Add this line — pass the job ID if page is job-specific
+    const jobId = "{{ job.id|default:'' }}";
+    
+    // 🧠 Add this flag to know if we are on the general page
+    const isGeneralPage = {% if is_general_page %}true{% else %}false{% endif %};
+    
+    function fetchResults() {
+        const query = input.value.trim();
+        const status = statusFilter.value;
+
+        // 🧠 Determine the 'job' parameter value
+        let jobParam = jobId; // Default to job ID (or empty string if 'All Applications')
+        if (isGeneralPage) {
+            jobParam = "general"; // Override for general applications page
+        }
+
+        // ✅ Pass the correct job parameter (jobParam)
+        const params = new URLSearchParams({ q: query, job: jobParam, status });
+        
+        fetch(`/applications/search/?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                tableBody.innerHTML = '';
+                const results = data.results;
+
+                if (results.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr><td colspan="8" class="text-center text-muted py-4">No applications found.</td></tr>
+                    `;
+                    return;
+                }
+
+                results.forEach(app => {
+                    const row = `
+                        <tr>
+                            <td class="ps-4"><strong>${app.full_name}</strong></td>
+                            <td>${app.job_title}</td>
+                            
+                            <td class="text-center">${app.phone_status_html}</td>
+                            <td class="text-center">${app.hr_status_html}</td>
+                            <td class="text-center">${app.technical_status_html}</td>
+                            <td class="text-center">${app.ceo_status_html}</td>
+                            
+                            <td>
+                                ${app.overall_status === 'hired' ? 
+                                    '<span class="badge bg-success">Hired</span>' :
+                                app.overall_status === 'rejected' ?
+                                    '<span class="badge bg-danger">Rejected</span>' :
+                                    '<span class="badge bg-info">In Review</span>'}
+                            </td>
+                            <td class="pe-4">
+                                <a href="/dashboard/application/${app.id}/status/" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil-square"></i> Manage
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                });
+            });
+    }
+
+    let timeout = null;
+    input.addEventListener('keyup', function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(fetchResults, 300);
+    });
+    statusFilter.addEventListener('change', fetchResults);
+});
+</script>
+
+
+{% endblock %}

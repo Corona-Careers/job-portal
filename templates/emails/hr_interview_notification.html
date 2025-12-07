@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New Interview Scheduled</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.5; }
+        h2 { color: #0d6efd; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin-bottom: 8px; }
+        .label { font-weight: bold; display: inline-block; width: 100px; }
+    </style>
+</head>
+<body>
+    <div style="max-width: 600px; border: 1px solid #ddd; padding: 20px; border-radius: 5px;">
+        <h2>📅 New Interview Scheduled</h2>
+        
+        <p>You have successfully scheduled an interview for the position <strong>{{ job_title }}</strong>.</p>
+        
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <ul>
+                <li><span class="label">Candidate:</span> {{ applicant_name }}</li>
+                <li><span class="label">Stage:</span> {{ stage_name }}</li>
+                <li><span class="label">Time:</span> {{ interview_date|date:"l, d F Y" }} at {{ interview_date|date:"h:i A" }}</li>
+            </ul>
+        </div>
+
+        <p><em>An invitation file (.ics) has been attached. Click it to add this event to your Outlook or Google Calendar.</em></p>
+    </div>
+</body>
+</html>

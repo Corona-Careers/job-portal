@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Application Complete - Corona</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px; }
+        .header { border-bottom: 2px solid #CE202F; padding-bottom: 10px; margin-bottom: 20px; }
+        .footer { margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 10px; }
+        h2 { color: #CE202F; margin-top: 0; }
+        .info-box { background-color: #f8f9fa; padding: 15px; border-left: 4px solid #CE202F; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Application Complete</h2>
+        </div>
+
+        <p>Dear <strong>{{ applicant.full_name }}</strong>,</p>
+
+        <p>Thank you for completing the detailed application form for <strong>{{ job.title|default:"General Application" }}</strong>.</p>
+
+        <div class="info-box">
+            <strong>Application Status:</strong> <span style="color: green;">Submitted Successfully</span><br>
+            <strong>Date:</strong> {% now "F j, Y" %}
+        </div>
+
+        <p>We have received your detailed answers and cover letter. Our hiring managers will now review your full profile.</p>
+
+        <h3>Next Steps</h3>
+        <p>If your qualifications meet our needs for this role, an HR representative will contact you to schedule an <strong>Interview</strong> (Phone or In-Person).</p>
+
+        <p>Thank you for your time and effort in completing this application.</p>
+
+        <div class="footer">
+            <p>Best regards,<br>Corona HR Team<br><a href="mailto:hr.career@corona.eg" style="color: #CE202F;">hr.career@corona.eg</a></p>
+        </div>
+    </div>
+</body>
+</html>
