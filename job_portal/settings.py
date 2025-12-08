@@ -79,22 +79,16 @@ WSGI_APPLICATION = 'job_portal.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('DB_NAME'),
-#         'USER': os.environ.get('DB_USER'),
-#         'PASSWORD': os.environ.get('DB_PASSWORD'),
-#         'HOST': os.environ.get('DB_HOST'),
-#         'PORT': os.environ.get('DB_PORT', '5432'),
-#     }
-# }
-DB_ENGINE='django.db.backends.postgresql'
-DB_NAME=os.environ.get('corona-careers_job_portal')
-DB_USER=os.environ.get('corona-careers_job_portal')
-DB_PASSWORD=os.environ.get('HC@corona2025')
-DB_HOST=os.environ.get('postgresql-corona-careers.alwaysdata.net')
-DB_PORT=os.environ.get('5432')
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
