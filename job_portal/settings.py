@@ -29,8 +29,10 @@ SECRET_KEY = 'django-insecure-mj7jez(w%a3$m)dw_yms4ipzq59rmfc96(c5wz%)c*)wf+s2&4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'corona-careers.alwaysdata.net',
+    'www.corona-careers.alwaysdata.net',
+]
 
 # Application definition
 
