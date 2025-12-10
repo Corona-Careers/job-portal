@@ -24,63 +24,6 @@ import pytz
 
 def send_applicant_notification(application, stage_name, new_status, comment):
     """
-    Sends an email to the applicant about their status change.
-    """
-    if new_status == DetailedApplication.STATUS_PENDING:
-        return # Don't send emails for 'pending'
-
-    job_title = application.link.job.title if application.link.job else "General Application"
-
-    NEXT_STAGE_MAP = {
-        'Phone Interview': 'HR Interview',
-        'HR Interview': 'Technical Interview',
-        'Technical Interview': 'CEO Interview',
-        'CEO Interview': 'Final Offer Meeting'
-    }
-
-    event_stage_name = stage_name
-    
-    if new_status == DetailedApplication.STATUS_PASSED:
-        event_stage_name = NEXT_STAGE_MAP.get(stage_name, stage_name)
-        subject = f"Congratulations! You've moved to the {event_stage_name}"
-    else: # STATUS_FAILED
-        subject = f"Update on your application for {job_title}"
-
-    has_interview = application.interview_date is not None
-
-    html_message = render_to_string('emails/status_notification.html', {
-        'applicant_name': application.full_name,
-        'job_title': job_title,
-        'stage_name': stage_name,
-        'next_stage': event_stage_name,
-        'status': new_status,
-        'status_display': 'Passed' if new_status == 'passed' else 'Not Selected',
-        'comment': comment,
-        'interview_date': application.interview_date if has_interview else None
-    })
-
-    # send_mail(
-    #     subject,
-    #     '', # Plain text message (optional)
-    #     settings.DEFAULT_FROM_EMAIL, # Configure this in your settings.py
-    #     [application.email],
-    #     html_message=html_message,
-    #     fail_silently=False
-    # )
-
-    email = EmailMessage(
-        subject,
-        html_message, # We use body for HTML in EmailMessage differently than send_mail
-        settings.DEFAULT_FROM_EMAIL,
-        [application.email],
-    )
-    email.content_subtype = "html"
-
-    # ✅ ATTACH CALENDAR INVITE
-    # In views.py
-
-def send_applicant_notification(application, stage_name, new_status, comment):
-    """
     Sends TWO separate emails:
     1. To Applicant: Friendly "Congratulations" or Update email.
     2. To HR: Factual "Interview Scheduled" email (Only if interview is set).
@@ -211,18 +154,32 @@ def is_hr_user(user):
     return user.is_authenticated and user.is_staff
 
 def get_unseen_notifications(request):
-    unseen_cvs = CVSubmission.objects.filter(job__created_by=request.user, viewed=False).order_by('-submitted_at')
-    unseen_applications = DetailedApplication.objects.filter(link__created_by=request.user, viewed=False).order_by('-submitted_at')
+    unseen_cvs = CVSubmission.objects.filter(
+        (Q(job__created_by=request.user) | Q(job__isnull=True)), 
+        viewed=False
+    ).order_by('-submitted_at')
+
+    unseen_applications = DetailedApplication.objects.filter(
+        link__created_by=request.user, 
+        viewed=False
+    ).order_by('-submitted_at')
 
     # Build quick-link URLs for each notification
-    cvs_data = [
-        {
+    cvs_data = []
+    for cv in unseen_cvs:
+        if cv.job:
+            title = cv.job.title
+            url = reverse('view-cv-submissions', kwargs={'job_pk': cv.job.id})
+        else:
+            title = "General Application"
+            # Ensure you have a URL pattern named 'view-general-submissions' in urls.py
+            url = reverse('view-general-submissions')
+
+        cvs_data.append({
             "name": cv.applicant_name,
-            "job_title": cv.job.title,
-            "url": reverse('view-cv-submissions', kwargs={'job_pk': cv.job.id})
-        }
-        for cv in unseen_cvs
-    ]
+            "job_title": title,
+            "url": url
+        })
 
     apps_data = [
         {
@@ -722,6 +679,11 @@ def view_general_submissions(request):
 
     if department:
         submissions = submissions.filter(department=department)
+        
+    for cv in submissions:
+        if not cv.viewed:
+            cv.viewed = True
+            cv.save(update_fields=['viewed'])
 
     # ✅ Dropdown departments (sorted & distinct)
     departments = (
