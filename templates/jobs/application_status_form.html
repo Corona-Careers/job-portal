@@ -13,9 +13,15 @@
             <strong style="color: #2C2C2C;">{{ application.link.job.title|default:"General Application" }}</strong>
         </p>
     </div>
-    <a href="{% url 'view-detailed-applications' %}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Back to Applications
-    </a>
+    {% if application.link.job %}
+        <a href="{% url 'view-detailed-applications' %}?job={{ application.link.job.id }}" class="btn btn-outline-dark">
+            &larr; Back to {{ application.link.job.title }} Applications
+        </a>
+    {% else %}
+        <a href="{% url 'view-general-applications' %}" class="btn btn-outline-dark">
+            &larr; Back to General Applications
+        </a>
+    {% endif %}
 </div>
 
 {% csrf_token %}
