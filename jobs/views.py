@@ -43,15 +43,19 @@ def send_applicant_notification(application, stage_name, new_status, comment):
 
     # 2. Determine Event Details
     event_stage_name = stage_name
-    
+
+    is_failed = new_status == DetailedApplication.STATUS_FAILED
+    has_interview = (application.interview_date is not None) and (not is_failed)
+
     # Applicant Subject Line Logic
     if new_status == DetailedApplication.STATUS_PASSED:
         event_stage_name = NEXT_STAGE_MAP.get(stage_name, stage_name)
         subject_applicant = f"Congratulations! You've moved to the {event_stage_name}"
+    elif is_failed:
+        # Optional: Specific subject for rejection
+        subject_applicant = f"Update regarding your application for {job_title}"
     else:
         subject_applicant = f"Update on your application for {job_title}"
-
-    has_interview = application.interview_date is not None
 
     # 3. Create Calendar Event Data (Generate once, use twice)
     ics_data = None
@@ -738,6 +742,13 @@ def update_application_status(request, pk):
         elif 'save_status' in payload:
             if status_form.is_valid():
                 application = status_form.save(commit=False)
+
+                if (application.phone_status == DetailedApplication.STATUS_FAILED or 
+                    application.hr_status == DetailedApplication.STATUS_FAILED or 
+                    application.technical_status == DetailedApplication.STATUS_FAILED or 
+                    application.ceo_status == DetailedApplication.STATUS_FAILED):
+                    # Wipe the date so it doesn't persist
+                    application.interview_date = None
 
                 # --- Determine overall status automatically ---
                 if application.ceo_status == DetailedApplication.STATUS_PASSED:
